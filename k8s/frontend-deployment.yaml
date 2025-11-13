@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: siddhartha54/frontend-micro:v1
+          image: siddhartha54/frontend-service:v5
           ports:
             - containerPort: 3000
           env:
