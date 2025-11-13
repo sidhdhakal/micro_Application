@@ -1,20 +1,24 @@
-version: '3'
 services:
-  user:
-    image: user
+  product:
+    build: ./Product
+    container_name: product-service
     ports:
-      - "3001:3001"
-    command: node server.js
+      - "5001:5001"
+
+  user:
+    build: ./User
+    container_name: user-service
+    ports:
+      - "5002:5002"
 
   cart:
-    image: cart
+    build: ./Cart
+    container_name: cart-service
     ports:
-      - "3003:3003"
-    command: node server.js  
+      - "5000:5000"
 
-  product:
-    image: product
+  frontend:
+    build: ./front-end
+    container_name: frontend
     ports:
-      - "3002:3002"
-    command: node server.js
-    
+      - "3000:5173"

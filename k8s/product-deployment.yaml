@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deployment
+  namespace: micro-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: siddhartha54/product-service:v2 
+          ports:
+            - containerPort: 9000
+          env:
+            - name: MONGO_URL
+              value: "mongodb://mongo:27017/productdb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: micro-app
+spec:
+  selector:
+    app: product
+  ports:
+    - port: 9000
+      targetPort: 9000
+  type: ClusterIP

@@ -1,11 +1,27 @@
-FROM node
+# Stage 1: Build (optional if you have build steps)
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY . /app
+# Copy package.json and package-lock.json first for caching
+COPY package*.json ./
 
-EXPOSE 3001:3001
+# Install dependencies
+RUN npm install --production
 
-RUN npm install
+# Copy source code
+COPY . .
 
-CMD npm run dev
+# Stage 2: Run
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy only necessary files
+COPY --from=build /app ./
+
+# Expose backend port
+EXPOSE 9001
+
+# Start the app
+CMD ["node", "server.js"]
