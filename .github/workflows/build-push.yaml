@@ -19,7 +19,7 @@ jobs:
         id: tag
         run: |
           RANDOM_TAG=$(( RANDOM % 90 + 10 ))
-          echo "TAG=$RANDOM_TAG" >> $GITHUB_OUTPUT
+          echo "TAG=v$RANDOM_TAG" >> $GITHUB_OUTPUT
 
       - name: Show Generated Tag
         run: echo "Using tag: ${{ steps.tag.outputs.TAG }}"
