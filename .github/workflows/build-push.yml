@@ -5,7 +5,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  build-push:
     runs-on: ubuntu-latest
 
     env:
@@ -17,13 +17,10 @@ jobs:
 
       - name: Generate Random Tag
         id: tag
-        shell: bash
-        run: |
-          NUM=$(( (RANDOM % 100) + 1 ))
-          echo "TAG=v$NUM" >> "$GITHUB_OUTPUT"
+        run: echo "TAG=v$((RANDOM % 100 + 1))" >> $GITHUB_OUTPUT
 
       - name: Show Generated Tag
-        run: echo "Generated Tag: ${{ steps.tag.outputs.TAG }}"
+        run: echo "Using tag: ${{ steps.tag.outputs.TAG }}"
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -31,6 +28,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Build & Push Frontend
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
@@ -38,6 +36,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/frontend-service:${{ steps.tag.outputs.TAG }}
 
+      # Build & Push Cart
       - name: Build & Push Cart Service
         uses: docker/build-push-action@v5
         with:
@@ -45,6 +44,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/cart-service:${{ steps.tag.outputs.TAG }}
 
+      # Build & Push Product
       - name: Build & Push Product Service
         uses: docker/build-push-action@v5
         with:
@@ -52,6 +52,7 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/product-service:${{ steps.tag.outputs.TAG }}
 
+      # Build & Push User
       - name: Build & Push User Service
         uses: docker/build-push-action@v5
         with:
@@ -59,5 +60,5 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/user-service:${{ steps.tag.outputs.TAG }}
 
-      - name: Print final tag
+      - name: Print Final Tag
         run: echo "All images pushed with tag: ${{ steps.tag.outputs.TAG }}"
