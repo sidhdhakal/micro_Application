@@ -17,7 +17,11 @@ jobs:
 
       - name: Generate Random Tag
         id: tag
-        run: echo "TAG=v$((RANDOM % 100 + 1))" >> $GITHUB_OUTPUT
+        shell: bash
+        run: |
+          # generate a random number between 1 and 100 and export as GitHub step output
+          NUM=$(( (RANDOM % 100) + 1 ))
+          echo "TAG=v$NUM" >> "$GITHUB_OUTPUT"
 
       - name: Show Generated Tag
         run: echo "Using tag: ${{ steps.tag.outputs.TAG }}"
@@ -28,7 +32,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Build & Push Frontend
       - name: Build & Push Frontend
         uses: docker/build-push-action@v5
         with:
@@ -36,7 +39,6 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/frontend-service:${{ steps.tag.outputs.TAG }}
 
-      # Build & Push Cart
       - name: Build & Push Cart Service
         uses: docker/build-push-action@v5
         with:
@@ -44,7 +46,6 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/cart-service:${{ steps.tag.outputs.TAG }}
 
-      # Build & Push Product
       - name: Build & Push Product Service
         uses: docker/build-push-action@v5
         with:
@@ -52,7 +53,6 @@ jobs:
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/product-service:${{ steps.tag.outputs.TAG }}
 
-      # Build & Push User
       - name: Build & Push User Service
         uses: docker/build-push-action@v5
         with:
