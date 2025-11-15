@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/cart", require("./routes/cartRouter"));
 (async () => {
   try {
-    console.log("Starting...");
+    console.log("...");
     const mongo_database = process.env.MONGO_URL;
     console.log("MONGOURL", mongo_database);
     await mongoose.connect(mongo_database);

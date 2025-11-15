@@ -32,6 +32,6 @@ spec:
     app: cart
   ports:
     - protocol: TCP
-      port: 9003
+      port: 9100
       targetPort: 9003
   type: ClusterIP
