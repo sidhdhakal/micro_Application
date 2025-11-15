@@ -1,7 +1,11 @@
 name: Update K8s Manifests & Push
 
 on:
-  workflow_dispatch: # manual trigger
+  workflow_run:
+    workflows: ["Build & Push Docker Images"]
+    types:
+      - completed
+
   push:
     branches: ["main"]
 
