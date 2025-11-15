@@ -15,9 +15,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Generate Random Tag
+      - name: Generate Image Tag
         id: tag
-        run: echo "TAG=v$((RANDOM % 100 + 1))" >> $GITHUB_OUTPUT
+        run: |
+        RANDOM_TAG=$(( RANDOM % 90 + 10 ))
+        echo "TAG=$RANDOM_TAG" >> $GITHUB_OUTPUT
+
 
       - name: Show Generated Tag
         run: echo "Using tag: ${{ steps.tag.outputs.TAG }}"
