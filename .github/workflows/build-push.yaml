@@ -49,6 +49,3 @@ jobs:
           context: ./User
           push: true
           tags: ${{ env.DOCKERHUB_USER }}/user-service:latest
-
-      - name: Print Final Tag
-        run: echo "All images pushed with tag: latest"
