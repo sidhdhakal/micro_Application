@@ -1,22 +1,18 @@
-const mongoose = require('mongoose');
-const redis = require('redis');
-require('dotenv').config();
+const mongoose = require("mongoose");
+const redis = require("redis");
+require("dotenv").config();
 
 const redisClient = redis.createClient();
 
 // Promisify Redis functions for async/await usage
 // const getAsync = promisify(redisClient.get).bind(redisClient);
 // const setAsync = promisify(redisClient.set).bind(redisClient);
-
-
-
 // async function getDataFromDatabase(id) {
 //     // Check if the data is already cached
 //     const cachedData = await getAsync(id);
 //     if (cachedData) {
 //       console.log('Fetching data from cache');
 //       return JSON.parse(cachedData);
-//     }
 
 //     // If not cached, fetch data from the database
 //     console.log('Fetching data from the database');
@@ -27,8 +23,6 @@ const redisClient = redis.createClient();
 
 //     return data;
 //   }
-
-
 
 //   async function main() {
 //     const data1 = await getDataFromDatabase();
@@ -41,11 +35,9 @@ const redisClient = redis.createClient();
 
 //   main().catch(console.error);
 
-
 // mongoose.connect(`mongodb://localhost:27017`
 // , { useNewUrlParser: true, useUnifiedTopology: true })
 // .then(() => console.log(`Connected to: DB`))
 // .catch(err => console.log(err));
-
 
 module.exports = mongoose;
