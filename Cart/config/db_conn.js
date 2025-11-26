@@ -13,7 +13,7 @@ const redisClient = redis.createClient();
 //     if (cachedData) {
 //       console.log('Fetching data from cache');
 //       return JSON.parse(cachedData);
-
+// thia ia the chnage
 //     // If not cached, fetch data from the database
 //     console.log('Fetching data from the database');
 //     const data = await MyModel.findById(id).exec();
@@ -26,6 +26,7 @@ const redisClient = redis.createClient();
 
 //   async function main() {
 //     const data1 = await getDataFromDatabase();
+
 //     console.log(data1);
 
 //     // Fetch the same data again to demonstrate caching
