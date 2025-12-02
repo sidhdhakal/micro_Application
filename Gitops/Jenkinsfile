@@ -1,0 +1,126 @@
+@Library('Shared') _
+pipeline {
+    agent any
+    
+    parameters {
+        string(name: 'Frontend_DOCKER_TAG', defaultValue: '', description: 'Frontend Docker tag of the image built by the CI job')
+        string(name: 'Cart_DOCKER_TAG', defaultValue: '', description: 'Cart Docker tag of the image built by the CI job')
+        string(name: 'Product_DOCKER_TAG', defaultValue: '', description: 'Product Docker tag of the image built by the CI job')
+        string(name: 'User_DOCKER_TAG', defaultValue: '', description: 'User Docker tag of the image built by the CI job')
+    }
+
+    stages {
+        stage("Workspace cleanup"){
+            steps{
+                script{
+                    cleanWs()
+                }
+            }
+        }
+        
+        stage('Git: Code Checkout') {
+    steps {
+        script {
+            code_checkout("https://github.com/sidhdhakal/micro_Application.git", "main")
+        }
+    }
+}
+        
+        stage('Verify: Docker Image Tags') {
+            steps {
+                script{
+                    echo "Frontend_DOCKER_TAG: ${params.Frontend_DOCKER_TAG}"
+                    echo "Cart_DOCKER_TAG: ${params.Cart_DOCKER_TAG}"
+                    echo "Product_DOCKER_TAG: ${params.Product_DOCKER_TAG}"
+                    echo "User_DOCKER_TAG: ${params.User_DOCKER_TAG}"
+                }
+            }
+        }
+        
+        
+        stage("Update: Kubernetes manifests") {
+    steps {
+        script {
+            dir('k8s') {
+                sh """
+                    sed -i -E 's|(siddhartha54/cart-service:).*|\\1${params.Cart_DOCKER_TAG}|' cart-deployment.yaml
+                    sed -i -E 's|(siddhartha54/product-service:).*|\\1${params.Product_DOCKER_TAG}|' product-deployment.yaml
+                    sed -i -E 's|(siddhartha54/user-service:).*|\\1${params.User_DOCKER_TAG}|' user-deployment.yaml
+                    sed -i -E 's|(siddhartha54/frontend-service:).*|\\1${params.Frontend_DOCKER_TAG}|' frontend-deployment.yaml
+                """
+            }
+        }
+    }
+}
+
+        
+        stage("Git: Code update and push to GitHub"){
+            steps{
+                script{
+                    withCredentials([gitUsernamePassword(credentialsId: 'Github-cred', gitToolName: 'Default')]) {
+                        sh '''
+                        echo "Checking repository status: "
+                        git status
+                    
+                        echo "Adding changes to git: "
+                        git add .
+                        
+                        echo "Commiting changes: "
+                        git commit -m "Updated environment variables"
+                        
+                        echo "Pushing changes to github: "
+                        git push https://github.com/sidhdhakal/micro_Application.git main
+                    '''
+                    }
+                }
+            }
+        }
+    }
+  post {
+        success {
+            script {
+                emailext attachLog: true,
+                from: 'siddharthadhakal54@gmail.com',
+                subject: "Micro ecommerce Application has been updated and deployed - '${currentBuild.result}'",
+                body: """
+                    <html>
+                    <body>
+                        <div style="background-color: #FFA07A; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Project: ${env.JOB_NAME}</p>
+                        </div>
+                        <div style="background-color: #90EE90; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
+                        </div>
+                        <div style="background-color: #87CEEB; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">URL: ${env.BUILD_URL}</p>
+                        </div>
+                    </body>
+                    </html>
+            """,
+            to: 'siddharthadhakal54@gmail.com',
+            mimeType: 'text/html'
+            }
+        }
+      failure {
+            script {
+                emailext attachLog: true,
+                from: 'siddharthadhakal54@gmail.com',
+                subject: "Micro ecommerce Application build failed - '${currentBuild.result}'",
+                body: """
+                    <html>
+                    <body>
+                        <div style="background-color: #FFA07A; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Project: ${env.JOB_NAME}</p>
+                        </div>
+                        <div style="background-color: #90EE90; padding: 10px; margin-bottom: 10px;">
+                            <p style="color: black; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
+                        </div>
+                    </body>
+                    </html>
+            """,
+            to: 'siddharthadhakal54@gmail.com'
+            mimeType: 'text/html'
+            }
+        }
+    }
+}
