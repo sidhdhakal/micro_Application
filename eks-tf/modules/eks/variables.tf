@@ -2,43 +2,41 @@ variable "cluster_name" {
   type = string
 }
 
-variable "k8s_version" {
-  type = string
-}
-
-variable "private_subnets" {
-  type = list(string)
-}
-
 variable "cluster_role_arn" {
-  type = string
+  description = "IAM Role ARN for EKS Control Plane"
+  type        = string
 }
 
 variable "node_role_arn" {
+  description = "IAM Role ARN for Worker Nodes"
+  type        = string
+}
+
+variable "subnet_ids" {
+  type = list(string)
+}
+
+variable "vpc_id" {
   type = string
 }
 
-variable "node_desired" {
+# Node group variables
+variable "desired_size" {
   type    = number
   default = 2
 }
 
-variable "node_min" {
+variable "min_size" {
   type    = number
-  default = 2
+  default = 1
 }
 
-variable "node_max" {
+variable "max_size" {
   type    = number
-  default = 2
+  default = 3
 }
 
-variable "node_instance_types" {
-  type    = list(string)
-  default = ["t2.micro"]
-}
-
-variable "tags" {
-  type    = map(string)
-  default = {}
+variable "instance_type" {
+  type    = string
+  default = "t3.medium"
 }
